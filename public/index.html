@@ -9,12 +9,39 @@
       font-family: monospace;
       background: #1e1e1e;
       color: #fff;
+      display: flex;
+      height: 100vh;
+      margin: 0;
       padding: 20px;
+      box-sizing: border-box;
+    }
+    #left, #right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #left {
+      margin-right: 10px;
+    }
+    #code {
+      flex: 1;
+      padding: 10px;
+      background: #333;
+      color: #fff;
+      border: none;
+      resize: none;
+    }
+    #run {
+      padding: 10px;
+      background: #444;
+      border: none;
+      color: #fff;
+      cursor: pointer;
     }
     #terminal {
+      flex: 1;
       border: 1px solid #333;
       padding: 10px;
-      height: 300px;
       overflow-y: scroll;
       white-space: pre-wrap;
     }
@@ -29,28 +56,45 @@
   </style>
 </head>
 <body>
-  <div id="terminal"></div>
-  <input type="text" id="input" placeholder="Type your commands here..." autofocus>
+  <div id="left">
+    <textarea id="code" placeholder="Write your code here..."></textarea>
+    <button id="run">Run</button>
+  </div>
+  <div id="right">
+    <div id="terminal"></div>
+    <input type="text" id="input" placeholder="Type your commands here..." autofocus>
+  </div>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
     const terminal = document.getElementById('terminal');
     const input = document.getElementById('input');
+    const codeInput = document.getElementById('code');
+    const runButton = document.getElementById('run');
 
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
-        const command = input.value + '\n';
+        const command = input.value;
+        terminal.innerText += `> ${command}\n`;
+        console.log(`Sending input: ${command}`);
         socket.emit('input', command);
         input.value = '';
       }
     });
 
     socket.on('output', (data) => {
+      console.log(`Received output: ${data}`);
       terminal.innerText += data;
       terminal.scrollTop = terminal.scrollHeight;
     });
 
-    socket.emit('start', 'python'); // Change to desired language
+    runButton.addEventListener('click', () => {
+      const language = prompt("Enter the language (python, node, java):", "python");
+      const code = codeInput.value;
+      terminal.innerText = '';
+      console.log(`Starting execution for language: ${language} with code: ${code}`);
+      socket.emit('start', { language, code });
+    });
   </script>
 </body>
 </html>
