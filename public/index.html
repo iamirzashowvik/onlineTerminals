@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Terminal</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #1e1e1e;
+      color: #fff;
+      padding: 20px;
+    }
+    #terminal {
+      border: 1px solid #333;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      white-space: pre-wrap;
+    }
+    #input {
+      width: 100%;
+      padding: 10px;
+      background: #333;
+      color: #fff;
+      border: none;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal"></div>
+  <input type="text" id="input" placeholder="Type your commands here..." autofocus>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const terminal = document.getElementById('terminal');
+    const input = document.getElementById('input');
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        const command = input.value + '\n';
+        socket.emit('input', command);
+        input.value = '';
+      }
+    });
+
+    socket.on('output', (data) => {
+      terminal.innerText += data;
+      terminal.scrollTop = terminal.scrollHeight;
+    });
+
+    socket.emit('start', 'python'); // Change to desired language
+  </script>
+</body>
+</html>
