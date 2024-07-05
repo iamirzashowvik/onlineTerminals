@@ -89,7 +89,7 @@
     });
 
     runButton.addEventListener('click', () => {
-      const language = prompt("Enter the language (python, node, java):", "python");
+      const language = prompt("Enter the language (python, node, cpp):", "python");
       const code = codeInput.value;
       terminal.innerText = '';
       console.log(`Starting execution for language: ${language} with code: ${code}`);

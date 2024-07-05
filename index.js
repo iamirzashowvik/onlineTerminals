@@ -110,8 +110,9 @@ io.on("connection", (socket) => {
 const getImageForLanguage = (language) => {
   const images = {
     python: "python",
-    node: "node:14",
-    java: "openjdk:11",
+    node: "node",
+    cpp: "gcc",
+    // java: "openjdk:11",
     // Add more languages and their Docker images
   };
   return images[language];
@@ -121,7 +122,8 @@ const getCodeFilePath = (language) => {
   const filePaths = {
     python: "/code.py",
     node: "/code.js",
-    java: "/HelloWorld.java",
+    cpp: "/code.cpp",
+    // java: "/HelloWorld.java",
     // Add more file paths for other languages
   };
   return filePaths[language];
@@ -131,7 +133,8 @@ const getExecCommand = (language, filePath) => {
   const commands = {
     python: `python ${filePath}`,
     node: `node ${filePath}`,
-    java: `javac ${filePath} && java HelloWorld`,
+    cpp: `g++ ${filePath} && ./a.out`,
+    // java: `javac ${filePath} && java HelloWorld`,
     // Add more execution commands for other languages
   };
   return commands[language];
