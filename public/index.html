@@ -4,63 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive Terminal</title>
-  <style>
-    body {
-      font-family: monospace;
-      background: #1e1e1e;
-      color: #fff;
-      display: flex;
-      height: 100vh;
-      margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-    #left, #right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    #left {
-      margin-right: 10px;
-    }
-    #code {
-      flex: 1;
-      padding: 10px;
-      background: #333;
-      color: #fff;
-      border: none;
-      resize: none;
-    }
-    #run {
-      padding: 10px;
-      background: #444;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-    }
-    #terminal {
-      flex: 1;
-      border: 1px solid #333;
-      padding: 10px;
-      overflow-y: scroll;
-      white-space: pre-wrap;
-    }
-    #input {
-      width: 100%;
-      padding: 10px;
-      background: #333;
-      color: #fff;
-      border: none;
-      outline: none;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  
   <div id="left">
+    <div id="topArea">
+      <h1>Interactive Terminal</h1>
+      <p>Write your code on the left and run it on the right.</p>
+      <p>Supported languages: python, node, cpp, kotlin, c, java</p>
+    </div> 
     <textarea id="code" placeholder="Write your code here..."></textarea>
     <button id="run">Run</button>
   </div>
+
+
+
   <div id="right">
+    <div id="topArea">  
+      
+      
+      <button id="python">Python</button>
+      <button id="node">Node</button>
+      <button id="cpp">C++</button>
+      <button id="kotlin">Kotlin</button>
+      <button id="c">C</button>
+      <button id="java">Java</button>
+      <a href="/test.html"><button>Docs</button></a>
+     
+
+    </div> 
     <div id="terminal"></div>
     <input type="text" id="input" placeholder="Type your commands here..." autofocus>
   </div>
@@ -89,7 +62,7 @@
     });
 
     runButton.addEventListener('click', () => {
-      const language = prompt("Enter the language (python, node, cpp):", "python");
+      const language = prompt("Enter the language (python, node, cpp, kotlin, c, java):", "python");
       const code = codeInput.value;
       terminal.innerText = '';
       console.log(`Starting execution for language: ${language} with code: ${code}`);

@@ -112,7 +112,9 @@ const getImageForLanguage = (language) => {
     python: "python",
     node: "node",
     cpp: "gcc",
-    // java: "openjdk:11",
+    c: "gcc",
+    kotlin: "openjdk",
+    java: "openjdk",
     // Add more languages and their Docker images
   };
   return images[language];
@@ -123,7 +125,9 @@ const getCodeFilePath = (language) => {
     python: "/code.py",
     node: "/code.js",
     cpp: "/code.cpp",
-    // java: "/HelloWorld.java",
+    c: "/code.c",
+    kotlin: "/code.kt",
+    java: "/HelloWorld.java",
     // Add more file paths for other languages
   };
   return filePaths[language];
@@ -134,7 +138,9 @@ const getExecCommand = (language, filePath) => {
     python: `python ${filePath}`,
     node: `node ${filePath}`,
     cpp: `g++ ${filePath} && ./a.out`,
-    // java: `javac ${filePath} && java HelloWorld`,
+    c: `g++ ${filePath} && ./a.out`,
+    kotlin: `kotlinc ${filePath} -include-runtime -d code.jar && java -jar code.jar`,
+    java: `javac ${filePath} && java HelloWorld`,
     // Add more execution commands for other languages
   };
   return commands[language];
