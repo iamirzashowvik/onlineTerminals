@@ -3,40 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Terminal</title>
+  <title>Programming Hero Terminal</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   
   <div id="left">
     <div id="topArea">
-      <h1>Interactive Terminal</h1>
+      <h1>Programming Hero Terminal</h1>
       <p>Write your code on the left and run it on the right.</p>
       <p>Supported languages: python, node, cpp, kotlin, c, java</p>
+      <a href="/test.html" style="color: aquamarine;">Docs</a>
     </div> 
     <textarea id="code" placeholder="Write your code here..."></textarea>
     <button id="run">Run</button>
   </div>
 
-
-
   <div id="right">
     <div id="topArea">  
-      
-      
       <button id="python">Python</button>
       <button id="node">Node</button>
       <button id="cpp">C++</button>
       <button id="kotlin">Kotlin</button>
       <button id="c">C</button>
       <button id="java">Java</button>
-      <a href="/test.html"><button>Docs</button></a>
-     
-
     </div> 
     <div id="terminal"></div>
     <input type="text" id="input" placeholder="Type your commands here..." autofocus>
   </div>
+  
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
@@ -44,6 +39,7 @@
     const input = document.getElementById('input');
     const codeInput = document.getElementById('code');
     const runButton = document.getElementById('run');
+    let selectedLanguage = 'python';  // Default language
 
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
@@ -62,12 +58,49 @@
     });
 
     runButton.addEventListener('click', () => {
-      const language = prompt("Enter the language (python, node, cpp, kotlin, c, java):", "python");
       const code = codeInput.value;
       terminal.innerText = '';
-      console.log(`Starting execution for language: ${language} with code: ${code}`);
-      socket.emit('start', { language, code });
+      console.log(`Starting execution for language: ${selectedLanguage} with code: ${code}`);
+      socket.emit('start', { language: selectedLanguage, code });
     });
+
+    // Language buttons event listeners
+    document.getElementById('python').addEventListener('click', () => {
+      selectedLanguage = 'python';
+      highlightSelectedButton('python');
+    });
+    document.getElementById('node').addEventListener('click', () => {
+      selectedLanguage = 'node';
+      highlightSelectedButton('node');
+    });
+    document.getElementById('cpp').addEventListener('click', () => {
+      selectedLanguage = 'cpp';
+      highlightSelectedButton('cpp');
+    });
+    document.getElementById('kotlin').addEventListener('click', () => {
+      selectedLanguage = 'kotlin';
+      highlightSelectedButton('kotlin');
+    });
+    document.getElementById('c').addEventListener('click', () => {
+      selectedLanguage = 'c';
+      highlightSelectedButton('c');
+    });
+    document.getElementById('java').addEventListener('click', () => {
+      selectedLanguage = 'java';
+      highlightSelectedButton('java');
+    });
+
+    // Function to highlight the selected button
+    function highlightSelectedButton(selectedId) {
+      const buttons = document.querySelectorAll('#topArea button');
+      buttons.forEach(button => {
+        if (button.id === selectedId) {
+          button.style.backgroundColor = 'lightblue'; // Highlight color
+        } else {
+          button.style.backgroundColor = ''; // Default color
+        }
+      });
+    }
   </script>
 </body>
 </html>
