@@ -3,7 +3,6 @@ const http = require("http");
 const socketIo = require("socket.io");
 const Docker = require("dockerode");
 const tar = require("tar-stream");
-const stream = require("stream");
 
 const app = express();
 const server = http.createServer(app);
@@ -16,7 +15,6 @@ io.on("connection", (socket) => {
   console.log("User connected");
 
   let container = null;
-  let exec = null;
 
   socket.on("start", async (data) => {
     const { language, code } = data;
@@ -57,7 +55,7 @@ io.on("connection", (socket) => {
           return;
         }
 
-        exec = await container.exec({
+        const exec = await container.exec({
           AttachStdin: true,
           AttachStdout: true,
           AttachStderr: true,
@@ -73,16 +71,18 @@ io.on("connection", (socket) => {
         });
 
         execStream.on("data", (chunk) => {
-          console.log(`Container output: ${chunk.toString()}`);
           socket.emit("output", chunk.toString());
         });
 
+        execStream.on("error", (error) => {
+          socket.emit("output", `Error: ${error.message}`);
+        });
+
         execStream.on("end", () => {
-          console.log("Exec stream ended");
+          socket.emit("output", "Execution completed");
         });
 
         socket.on("input", (data) => {
-          console.log(`Received input: ${data}`);
           if (execStream) {
             execStream.write(data + "\n");
           }
@@ -95,6 +95,51 @@ io.on("connection", (socket) => {
       });
     } catch (err) {
       console.error(`Error: ${err.message}`);
+      socket.emit("output", `Error: ${err.message}`);
+    }
+  });
+
+  socket.on("install", async (data) => {
+    const { language, libraries } = data;
+    const installCmd = getInstallCommand(language, libraries);
+    if (!installCmd) {
+      socket.emit("output", "Unsupported language for library installation");
+      return;
+    }
+
+    try {
+      if (!container) {
+        socket.emit("output", "Container not available");
+        return;
+      }
+
+      const exec = await container.exec({
+        AttachStdin: true,
+        AttachStdout: true,
+        AttachStderr: true,
+        Cmd: ["/bin/bash", "-c", installCmd],
+        Tty: false,
+      });
+
+      const execStream = await exec.start({
+        hijack: true,
+        stdin: true,
+        stdout: true,
+        stderr: true,
+      });
+
+      execStream.on("data", (chunk) => {
+        socket.emit("output", chunk.toString());
+      });
+
+      execStream.on("error", (error) => {
+        socket.emit("output", `Error: ${error.message}`);
+      });
+
+      execStream.on("end", () => {
+        socket.emit("output", "Library installation complete");
+      });
+    } catch (err) {
       socket.emit("output", `Error: ${err.message}`);
     }
   });
@@ -142,6 +187,17 @@ const getExecCommand = (language, filePath) => {
     kotlin: `kotlinc ${filePath} -include-runtime -d code.jar && java -jar code.jar`,
     java: `javac ${filePath} && java HelloWorld`,
     // Add more execution commands for other languages
+  };
+  return commands[language];
+};
+
+const getInstallCommand = (language, libraries) => {
+  const commands = {
+    python: `pip install ${libraries.join(
+      " "
+    )} --target /usr/local/lib/python3.8/site-packages/`,
+    node: `npm install -g ${libraries.join(" ")}`,
+    // Add more commands for other languages
   };
   return commands[language];
 };

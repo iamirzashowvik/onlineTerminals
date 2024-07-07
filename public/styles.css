@@ -1,52 +1,53 @@
 body {
-    font-family: monospace;
-    background: #1e1e1e;
-    color: #fff;
-    display: flex;
-    height: 100vh;
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  #topArea{
-    height: 150px;
-  }
+  display: flex;
+  justify-content: space-between;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  height: 100vh;
+}
 
-  #left, #right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  #left {
-    margin-right: 10px;
-  }
-  #code {
-    flex: 1;
-    padding: 10px;
-    background: #333;
-    color: #fff;
-    border: none;
-    resize: none;
-  }
-  #run {
-    padding: 10px;
-    background: #444;
-    border: none;
-    color: #fff;
-    cursor: pointer;
-  }
-  #terminal {
-    flex: 1;
-    border: 1px solid #333;
-    padding: 10px;
-    overflow-y: scroll;
-    white-space: pre-wrap;
-  }
-  #input {
-    width: 100%;
-    padding: 10px;
-    background: #333;
-    color: #fff;
-    border: none;
-    outline: none;
-  }
+#left, #right {
+  width: 45%;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+#left #code {
+  flex: 1;
+  margin-bottom: 10px;
+}
+
+#run {
+  align-self: flex-end;
+}
+
+#terminal {
+  flex: 1;
+  background-color: black;
+  color: white;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+#input, #libraries {
+  margin-top: 10px;
+}
+
+#topArea {
+  margin-bottom: 10px;
+}
+
+#topArea button {
+  margin-right: 5px;
+}
+
+#library-install {
+  margin-top: 10px;
+}
+
+#library-install input {
+  width: calc(100% - 100px);
+  margin-right: 5px;
+}

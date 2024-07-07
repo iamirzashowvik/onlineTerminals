@@ -30,6 +30,10 @@
     </div> 
     <div id="terminal"></div>
     <input type="text" id="input" placeholder="Type your commands here..." autofocus>
+    <div id="library-install">
+      <input type="text" id="libraries" placeholder="Enter libraries (comma-separated)">
+      <button id="install">Install Libraries</button>
+    </div>
   </div>
   
   <script src="/socket.io/socket.io.js"></script>
@@ -39,32 +43,35 @@
     const input = document.getElementById('input');
     const codeInput = document.getElementById('code');
     const runButton = document.getElementById('run');
+    const installButton = document.getElementById('install');
+    const librariesInput = document.getElementById('libraries');
     let selectedLanguage = 'python';  // Default language
 
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
         const command = input.value;
         terminal.innerText += `> ${command}\n`;
-        console.log(`Sending input: ${command}`);
         socket.emit('input', command);
         input.value = '';
       }
     });
 
     socket.on('output', (data) => {
-      console.log(`Received output: ${data}`);
-      terminal.innerText += data;
+      terminal.innerText += data + "\n";
       terminal.scrollTop = terminal.scrollHeight;
     });
 
     runButton.addEventListener('click', () => {
       const code = codeInput.value;
       terminal.innerText = '';
-      console.log(`Starting execution for language: ${selectedLanguage} with code: ${code}`);
       socket.emit('start', { language: selectedLanguage, code });
     });
 
-    // Language buttons event listeners
+    installButton.addEventListener('click', () => {
+      const libraries = librariesInput.value.split(',').map(lib => lib.trim());
+      socket.emit('install', { language: selectedLanguage, libraries });
+    });
+
     document.getElementById('python').addEventListener('click', () => {
       selectedLanguage = 'python';
       highlightSelectedButton('python');
@@ -90,7 +97,6 @@
       highlightSelectedButton('java');
     });
 
-    // Function to highlight the selected button
     function highlightSelectedButton(selectedId) {
       const buttons = document.querySelectorAll('#topArea button');
       buttons.forEach(button => {
